@@ -1,6 +1,6 @@
 # AI Smart Study Assistant
 
-A personal learning workspace built with React/Vite and FastAPI. Upload lecture PDFs, ask grounded questions with page references, create study notes, and practice with Gemini-generated quizzes. The interface uses charcoal surfaces, muted blue accents, locally served Inter/Playfair Display/JetBrains Mono fonts, and responsive layouts.
+A personal learning workspace built with React/Vite and FastAPI. Upload lecture PDFs, ask grounded questions with page references, create study notes, and practice with Gemini-generated quizzes. The interface uses charcoal surfaces, consistent neon-white text (`#F5FAFF`) and electric-blue accents (`#58A6FF`), locally served Inter/Playfair Display/JetBrains Mono fonts, and responsive layouts.
 
 This is a **single-user local application**, without authentication. Keep both servers bound to localhost. The application contains no sample documents, fabricated analytics, or fallback AI answers.
 
@@ -92,6 +92,14 @@ Open **http://localhost:5173**. API documentation is at **http://localhost:8000/
 4. Open **Quiz Generator**. Choose 5/10/15/20 questions, difficulty, language, and optionally a topic. Navigate questions and select one answer each. Submit to see a Python-calculated score, answer review, explanations, and source pages. Skipped questions count as incorrect. Reopening a quiz starts a fresh attempt; saved attempts remain in **Learning History**.
 5. Dashboard statistics and charts reflect actual persisted records. The activity feed shows the 40 latest learning events; quiz attempt history is available separately in full.
 
+## Global design system
+
+All pages share the canonical CSS variables in `frontend/src/index.css`: `--color-white`, `--color-neon-blue`, the four background tokens, `--border-neutral`, and shared white/blue glow tokens. Tailwind colors reference the same tokens. Components, Markdown, form states, chart labels, tooltips, source badges, quiz review and notifications all use this palette; surface transparency uses `color-mix` without dimming white text.
+
+The landing header has a rounded capsule, a thin neon-white outline and backdrop blur. Navigation uses white text with blue active/hover states. Launch App stays transparent with bold white text. Primary workspace actions use dark surfaces and electric-blue borders/glow to preserve white-text contrast. Status meaning is conveyed through labels, icons and border styles.
+
+Run `npm run audit:theme` from `frontend` to check the canonical palette, token references and component overrides. The production build runs this audit automatically. `tests/theme.spec.js` checks every page and generated content view on desktop/mobile using browser-only fixtures, and captures screenshots in `qa/neon/`. These fixtures do not change the real database or production AI responses.
+
 ## Interface motion
 
 Framer Motion handles soft fade/slide entrances and page changes. The reusable `Reveal` component uses the native Intersection Observer API to show landing sections and workspace cards as they enter the viewport. Feature cards and study steps use short staggered delays. Each element reveals once and remains visible when you scroll back; keyboard focus also reveals its content.
@@ -137,15 +145,15 @@ Do not change the embedding model or dimensions for existing indexed documents w
 
 Successful responses have `{"data": ...}`. Errors have `{"error": {"message": "..."}}` with appropriate HTTP status codes. UUIDs and request fields are validated. See Swagger for complete schemas.
 
-| Area | Endpoints |
-| --- | --- |
+| Area      | Endpoints                                                                                                                      |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | Documents | `POST /api/documents/upload` (multipart `file`), `GET /api/documents`, `GET /api/documents/{id}`, `DELETE /api/documents/{id}` |
-| Chat | `POST /api/chat`, `GET /api/chat/sessions`, `GET /api/chat/sessions/{id}`, `DELETE /api/chat/sessions/{id}` |
-| Summaries | `POST /api/summaries/generate`, `GET /api/summaries`, `GET /api/summaries/{id}` |
-| Quizzes | `POST /api/quizzes/generate`, `GET /api/quizzes`, `GET /api/quizzes/{id}`, `POST /api/quizzes/{id}/submit` |
-| Results | `GET /api/quizzes/results`, `GET /api/quizzes/results/{attempt_id}` |
-| Dashboard | `GET /api/dashboard/stats`, `GET /api/dashboard/activity` |
-| Health | `GET /api/health` |
+| Chat      | `POST /api/chat`, `GET /api/chat/sessions`, `GET /api/chat/sessions/{id}`, `DELETE /api/chat/sessions/{id}`                    |
+| Summaries | `POST /api/summaries/generate`, `GET /api/summaries`, `GET /api/summaries/{id}`                                                |
+| Quizzes   | `POST /api/quizzes/generate`, `GET /api/quizzes`, `GET /api/quizzes/{id}`, `POST /api/quizzes/{id}/submit`                     |
+| Results   | `GET /api/quizzes/results`, `GET /api/quizzes/results/{attempt_id}`                                                            |
+| Dashboard | `GET /api/dashboard/stats`, `GET /api/dashboard/activity`                                                                      |
+| Health    | `GET /api/health`                                                                                                              |
 
 ## Validation
 

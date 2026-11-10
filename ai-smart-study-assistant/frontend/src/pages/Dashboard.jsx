@@ -178,35 +178,43 @@ export default function Dashboard() {
                       <linearGradient id="score" x1="0" y1="0" x2="0" y2="1">
                         <stop
                           offset="0%"
-                          stopColor="#4F83CC"
+                          stopColor="var(--color-neon-blue)"
                           stopOpacity={0.3}
                         />
                         <stop
                           offset="100%"
-                          stopColor="#4F83CC"
+                          stopColor="var(--color-neon-blue)"
                           stopOpacity={0}
                         />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid stroke="#2B3544" vertical={false} />
+                    <CartesianGrid
+                      stroke="var(--border-neutral)"
+                      vertical={false}
+                    />
                     <XAxis
                       dataKey="attempt"
                       tickLine={false}
                       axisLine={false}
-                      tick={{ fill: "#94A3B8", fontSize: 11 }}
+                      tick={{ fill: "var(--color-white)", fontSize: 11 }}
                     />
                     <YAxis
                       domain={[0, 100]}
                       tickLine={false}
                       axisLine={false}
-                      tick={{ fill: "#94A3B8", fontSize: 11 }}
+                      tick={{ fill: "var(--color-white)", fontSize: 11 }}
                       unit="%"
                       width={42}
                     />
                     <Tooltip
+                      cursor={{
+                        stroke: "var(--color-neon-blue)",
+                        strokeDasharray: "3 3",
+                      }}
                       contentStyle={{
-                        background: "#191F2A",
-                        border: "1px solid #2B3544",
+                        background: "var(--bg-card)",
+                        border: "1px solid var(--border-neutral)",
+                        color: "var(--color-white)",
                         borderRadius: 10,
                       }}
                       formatter={(v) => [`${v}%`, "Score"]}
@@ -215,7 +223,12 @@ export default function Dashboard() {
                     <Area
                       type="monotone"
                       dataKey="percentage"
-                      stroke="#709ADB"
+                      stroke="var(--color-neon-blue)"
+                      activeDot={{
+                        r: 5,
+                        fill: "var(--color-neon-blue)",
+                        stroke: "var(--color-white)",
+                      }}
                       strokeWidth={2}
                       fill="url(#score)"
                     />

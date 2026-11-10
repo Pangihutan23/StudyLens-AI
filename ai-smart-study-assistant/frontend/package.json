@@ -7,7 +7,8 @@
     "test:e2e": "playwright test",
     "format": "prettier --write src tests *.js *.json index.html",
     "dev": "vite --host 127.0.0.1 --port 5173 --strictPort",
-    "build": "vite build",
+    "build": "npm run audit:theme && vite build",
+    "audit:theme": "node scripts/audit-theme.mjs",
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
@@ -29,6 +30,7 @@
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^4.7.0",
     "prettier": "^3.9.10",
+    "postcss": "8.5.32",
     "tailwindcss": "^4.1.14",
     "vite": "^6.4.1"
   }

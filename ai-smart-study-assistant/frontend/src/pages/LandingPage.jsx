@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -19,6 +19,10 @@ import {
 } from "lucide-react";
 import { Logo } from "../components/layout/Layout";
 import Reveal from "../components/common/Reveal";
+import {
+  landingSections,
+  useActiveLandingSection,
+} from "../hooks/useActiveLandingSection";
 
 const features = [
   {
@@ -52,34 +56,52 @@ const features = [
 ];
 export default function LandingPage() {
   const [menu, setMenu] = useState(false);
+  const [activeSection, setActiveSection] = useActiveLandingSection();
+  const menuButton = useRef(null);
   return (
     <div className="landing" id="home">
       <a className="skip-link" href="#hero">
         Skip to content
       </a>
-      <header className="landing-nav">
+      <header
+        className="landing-nav"
+        onKeyDown={(event) => {
+          if (event.key === "Escape" && menu) {
+            setMenu(false);
+            menuButton.current?.focus();
+          }
+        }}
+      >
         <Logo />
         <button
+          ref={menuButton}
           className="icon-btn mobile-only"
           aria-label="Toggle navigation"
           aria-expanded={menu}
+          aria-controls="landing-navigation"
           onClick={() => setMenu((v) => !v)}
         >
           {menu ? <X /> : <Menu />}
         </button>
-        <nav className={menu ? "open" : ""} aria-label="Website navigation">
-          <a href="#home" onClick={() => setMenu(false)}>
-            Home
-          </a>
-          <a href="#features" onClick={() => setMenu(false)}>
-            Features
-          </a>
-          <a href="#how-it-works" onClick={() => setMenu(false)}>
-            How It Works
-          </a>
-          <a href="#about" onClick={() => setMenu(false)}>
-            About
-          </a>
+        <nav
+          id="landing-navigation"
+          className={menu ? "open" : ""}
+          aria-label="Website navigation"
+        >
+          {landingSections.map(({ id, label }) => (
+            <a
+              key={id}
+              className="nav-pill"
+              href={`#${id}`}
+              aria-current={activeSection === id ? "location" : undefined}
+              onClick={() => {
+                setActiveSection(id);
+                setMenu(false);
+              }}
+            >
+              {label}
+            </a>
+          ))}
           <Link className="btn btn-secondary nav-launch" to="/app">
             Launch App
             <ArrowUpRight size={15} />

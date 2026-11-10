@@ -20,3 +20,21 @@ See the project README for commands, architecture and known local-version limits
 - Workspace and clickable feature cards fade without positional movement, keeping touch targets stable during their entrance. Informational sections retain a short upward entrance; hover effects use CSS transitions.
 - Screenshots were refreshed, with a landing preview at `qa/motion-preview.png`.
 - This update reused the user's existing local servers and left them running. Backend logic and live Gemini access were not part of this UI verification.
+
+## Landing header update
+
+- Preserved landing layout, content, fonts and backend functionality while updating navigation pills, header blur, Launch App gradient and the upper-page blue atmosphere.
+- Active navigation follows section links, manual scrolling and browser history; mobile Escape closes the menu and restores focus to its toggle.
+- Production build passed. **10 landing header and motion checks passed** across desktop and phone viewports, including tablet spacing and keyboard navigation.
+- Desktop and mobile previews are saved as `qa/header-desktop.png`, `qa/header-mobile.png`, and a clean desktop view at `qa/header-preview.png`.
+- Verification used the frontend only. The temporary frontend server was stopped afterward.
+
+## Global neon design update
+
+- Centralized all frontend colors: neon white `#F5FAFF`, electric blue `#58A6FF`, and the requested dark surfaces. Old text shades and component color literals were removed; charts, Markdown, dialogs, statuses and form states share the new tokens.
+- Added `npm run audit:theme`, also run by the production build. The audit checks canonical values, missing/invalid token references and component color overrides.
+- **16 frontend browser tests passed**, including every page, populated chat/summary views, quiz play/review, document dialogs, keyboard navigation, mobile responsiveness and existing AI interaction rendering. Browser API fixtures are confined to tests; no backend or Gemini generation code was changed.
+- Screenshots in `qa/neon/` were visually reviewed across the landing page, dashboard, documents, chat, summaries, quiz, results, history and settings. Populated screens use explicitly isolated test data.
+- The landing header is a neon-white outlined capsule, and Launch App is transparent bold white text. Shared primary actions keep white text readable on dark surfaces with blue borders/glow.
+- Final production build and theme audit passed without CSS warnings. Four focused all-page theme checks passed again after the last decorative-icon and disabled-input adjustments.
+- The final landing viewport is `qa/neon-preview.png`. The temporary frontend preview server was stopped after verification; no backend server was started for this update.
