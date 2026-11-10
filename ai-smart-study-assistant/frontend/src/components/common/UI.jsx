@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useApp } from "../../context/AppContext";
+import Reveal from "./Reveal";
 
 const MarkdownRenderer = lazy(() => import("./Markdown"));
 
@@ -33,9 +34,9 @@ export function Button({
 }
 export function Card({ children, className = "", ...props }) {
   return (
-    <div className={`card ${className}`} {...props}>
+    <Reveal distance={0} className={`card ${className}`} {...props}>
       {children}
-    </div>
+    </Reveal>
   );
 }
 export function Badge({ children, tone = "" }) {

@@ -92,6 +92,14 @@ Open **http://localhost:5173**. API documentation is at **http://localhost:8000/
 4. Open **Quiz Generator**. Choose 5/10/15/20 questions, difficulty, language, and optionally a topic. Navigate questions and select one answer each. Submit to see a Python-calculated score, answer review, explanations, and source pages. Skipped questions count as incorrect. Reopening a quiz starts a fresh attempt; saved attempts remain in **Learning History**.
 5. Dashboard statistics and charts reflect actual persisted records. The activity feed shows the 40 latest learning events; quiz attempt history is available separately in full.
 
+## Interface motion
+
+Framer Motion handles soft fade/slide entrances and page changes. The reusable `Reveal` component uses the native Intersection Observer API to show landing sections and workspace cards as they enter the viewport. Feature cards and study steps use short staggered delays. Each element reveals once and remains visible when you scroll back; keyboard focus also reveals its content.
+
+CSS transitions provide card elevation, button feedback, moving link arrows, and smooth focus borders. Workspace cards and clickable feature cards use an opacity-only entrance so buttons stay in place during taps. Hover elevation is limited to devices with a precise pointer. The implementation honors `prefers-reduced-motion` and keeps content readable when Intersection Observer is unavailable. No additional animation dependency or backend configuration is needed.
+
+Shared implementation: `frontend/src/components/common/Reveal.jsx`, `frontend/src/components/common/PageTransition.jsx`, `frontend/src/hooks/useIntersectionReveal.js`, and `frontend/src/index.css`. Adjust the entrance duration/distance in `Reveal.jsx`; CSS interaction transitions are near the end of `index.css`.
+
 ## Architecture and data
 
 ```text

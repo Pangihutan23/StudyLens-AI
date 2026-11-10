@@ -694,7 +694,6 @@ small {
     background 0.25s;
 }
 .feature-card:hover {
-  transform: translateY(-5px);
   border-color: #4f83cc88;
   background: #191f2a;
 }
@@ -4232,7 +4231,103 @@ td .text-link {
     display: none;
   }
 }
+/* Interaction feedback is separate from Motion's entrance transforms. */
+.btn,
+.icon-btn {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+.btn:active:not(:disabled),
+.icon-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.feature-card,
+.quick-action,
+.document-card,
+.saved-summary,
+.stat-card {
+  transition:
+    translate 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 240ms ease,
+    background-color 240ms ease,
+    box-shadow 240ms ease;
+}
+.feature-icon,
+.feature-cta svg,
+.text-link svg,
+.hero-actions .btn svg,
+.sidebar nav a,
+.sidebar-bottom > a,
+.filter-tabs button,
+.question-numbers button,
+.suggestions button,
+.review-options > div {
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    translate 200ms ease;
+}
+.search-input,
+.chat-composer > div,
+.context-document {
+  transition:
+    border-color 200ms ease,
+    background-color 200ms ease,
+    box-shadow 200ms ease;
+}
+.search-input:focus-within,
+.chat-composer > div:focus-within {
+  border-color: #709adb;
+  box-shadow: 0 0 0 3px #4f83cc0c;
+}
+.reveal:focus-within {
+  opacity: 1 !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  .feature-card:hover {
+    translate: 0 -5px;
+    box-shadow: 0 14px 28px #0000001f;
+  }
+  .quick-action:hover,
+  .document-card:hover,
+  .saved-summary:hover,
+  .stat-card:hover {
+    translate: 0 -3px;
+    border-color: #4f83cc70;
+    box-shadow: 0 10px 24px #00000018;
+  }
+  .feature-card:hover .feature-icon {
+    background-color: #4f83cc20;
+    border-color: #4f83cc50;
+    color: #b2c9ea;
+  }
+  .feature-card:hover .feature-cta svg,
+  .text-link:hover svg,
+  .hero-actions .btn:hover svg {
+    translate: 3px 0;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .page-transition {
+    opacity: 1 !important;
+    transform: none !important;
+    translate: none !important;
+  }
+  .feature-card,
+  .quick-action,
+  .document-card,
+  .saved-summary,
+  .stat-card,
+  .btn,
+  .icon-btn {
+    translate: none !important;
+  }
   html {
     scroll-behavior: auto;
   }

@@ -12,3 +12,11 @@ Checked on 10 November 2026 on Windows, using Python 3.12 and Node 22.12.
 **Live Gemini generation and embedding have not been tested.** No Gemini key was provided. Configure `backend/.env`, restart FastAPI, and upload a text PDF to verify real model access and quota for your account. No hosted deployment was requested or performed.
 
 See the project README for commands, architecture and known local-version limits. QA servers are stopped after verification; use the documented commands to start them again.
+
+## Interface motion update
+
+- Production frontend build passed after adding shared scroll reveals and page entrances.
+- **10 browser tests passed** across desktop and phone viewports, including one-time scroll reveals, reduced motion, and the Intersection Observer fallback, plus the existing workspace and AI rendering flows.
+- Workspace and clickable feature cards fade without positional movement, keeping touch targets stable during their entrance. Informational sections retain a short upward entrance; hover effects use CSS transitions.
+- Screenshots were refreshed, with a landing preview at `qa/motion-preview.png`.
+- This update reused the user's existing local servers and left them running. Backend logic and live Gemini access were not part of this UI verification.

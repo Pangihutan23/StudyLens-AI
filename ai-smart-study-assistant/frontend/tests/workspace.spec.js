@@ -9,6 +9,14 @@ async function noOverflow(page) {
     ),
   ).toBeTruthy();
 }
+async function revealPage(page) {
+  for (const element of await page.locator("[data-reveal]").all()) {
+    await element.scrollIntoViewIfNeeded();
+    await expect(element).toHaveAttribute("data-reveal", "visible");
+    await expect(element).toHaveCSS("opacity", "1");
+  }
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+}
 async function navigate(page, label) {
   if (
     await page
@@ -43,6 +51,7 @@ test("landing, real backend, all workspace pages and responsive layout", async (
       .filter({ has: page.getByRole("heading", { level: 1 }) }),
   ).toHaveCSS("opacity", "1");
   await noOverflow(page);
+  await revealPage(page);
   await page.screenshot({
     path: path.join(qa, `landing-${info.project.name}.png`),
     fullPage: true,
@@ -57,6 +66,7 @@ test("landing, real backend, all workspace pages and responsive layout", async (
   await expect(page.locator(".connection.online")).toBeVisible();
   await expect(page.getByText("Uploaded PDFs", { exact: true })).toBeVisible();
   await noOverflow(page);
+  await revealPage(page);
   await page.screenshot({
     path: path.join(qa, `dashboard-${info.project.name}.png`),
     fullPage: true,

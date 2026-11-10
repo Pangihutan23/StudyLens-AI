@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -19,6 +18,7 @@ import {
   CornerDownRight,
 } from "lucide-react";
 import { Logo } from "../components/layout/Layout";
+import Reveal from "../components/common/Reveal";
 
 const features = [
   {
@@ -89,11 +89,7 @@ export default function LandingPage() {
       <main>
         <section className="hero" id="hero">
           <div className="hero-grid" aria-hidden="true" />
-          <motion.div
-            initial={{ opacity: 0, y: 22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
+          <Reveal className="hero-content">
             <span className="hero-badge">
               <span />
               AI-POWERED LEARNING PLATFORM
@@ -123,8 +119,8 @@ export default function LandingPage() {
               <ShieldCheck size={14} />
               <span>Your materials. Your pace. Your potential.</span>
             </div>
-          </motion.div>
-          <div className="learning-strip">
+          </Reveal>
+          <Reveal className="learning-strip" delay={0.12}>
             <span className="mono">
               BUILT FOR YOUR
               <br />
@@ -147,10 +143,10 @@ export default function LandingPage() {
             <span className="strip-star" aria-hidden="true">
               ✳
             </span>
-          </div>
+          </Reveal>
         </section>
         <section className="features-section section-wrap" id="features">
-          <div className="landing-section-heading">
+          <Reveal className="landing-section-heading">
             <div>
               <div className="eyebrow">
                 <span className="tiny-line" />
@@ -167,10 +163,16 @@ export default function LandingPage() {
               <br className="desktop-break" /> to knowledge that actually stays
               with you.
             </p>
-          </div>
+          </Reveal>
           <div className="features-grid">
-            {features.map(({ icon: Icon, ...f }) => (
-              <Link className="feature-card" to={`/app/${f.to}`} key={f.title}>
+            {features.map(({ icon: Icon, ...f }, index) => (
+              <Reveal
+                as="link"
+                className="feature-card"
+                to={`/app/${f.to}`}
+                key={f.title}
+                delay={index * 0.07}
+              >
                 <div className="feature-top">
                   <span className="feature-icon">
                     <Icon size={24} strokeWidth={1.4} />
@@ -184,12 +186,12 @@ export default function LandingPage() {
                   Explore tool
                   <ArrowRight size={14} />
                 </span>
-              </Link>
+              </Reveal>
             ))}
           </div>
         </section>
         <section className="workflow-section section-wrap" id="how-it-works">
-          <div className="landing-section-heading">
+          <Reveal className="landing-section-heading">
             <div>
               <div className="eyebrow">
                 <span className="tiny-line" />A SIMPLER STUDY ROUTINE
@@ -205,7 +207,7 @@ export default function LandingPage() {
               <br />
               Just your materials, working harder for you.
             </p>
-          </div>
+          </Reveal>
           <div className="steps">
             {[
               [
@@ -229,18 +231,18 @@ export default function LandingPage() {
                 "Practice, review explanations, and see your progress.",
               ],
             ].map(([Icon, title, text], i) => (
-              <div className="step" key={title}>
+              <Reveal className="step" key={title} delay={i * 0.07}>
                 <div className="step-number">
                   0{i + 1}
                   <Icon size={18} />
                 </div>
                 <h3>{title}</h3>
                 <p>{text}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
-        <section className="about-section section-wrap" id="about">
+        <Reveal as="section" className="about-section section-wrap" id="about">
           <div className="about-mark">
             <BookOpen size={44} strokeWidth={1} />
             <span className="orbital" />
@@ -272,8 +274,8 @@ export default function LandingPage() {
               </span>
             </div>
           </div>
-        </section>
-        <section className="closing-cta section-wrap">
+        </Reveal>
+        <Reveal as="section" className="closing-cta section-wrap">
           <div className="eyebrow">YOUR NEXT CHAPTER STARTS HERE</div>
           <h2>
             Make room for
@@ -287,9 +289,9 @@ export default function LandingPage() {
           <span className="closing-decoration" aria-hidden="true">
             <CornerDownRight size={90} strokeWidth={0.6} />
           </span>
-        </section>
+        </Reveal>
       </main>
-      <footer className="landing-footer">
+      <Reveal as="footer" className="landing-footer">
         <div>
           <Logo />
           <p>A clearer way to learn.</p>
@@ -309,7 +311,7 @@ export default function LandingPage() {
             MADE FOR CURIOUS MINDS <span className="blue">✦</span>
           </span>
         </div>
-      </footer>
+      </Reveal>
     </div>
   );
 }

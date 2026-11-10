@@ -86,8 +86,8 @@ export default function Dashboard() {
         <Skeleton />
       ) : (
         <div className="stats-grid">
-          {cards.map(([key, label, Icon]) => (
-            <Card className="stat-card" key={key}>
+          {cards.map(([key, label, Icon], index) => (
+            <Card className="stat-card" key={key} delay={index * 0.06}>
               <div>
                 <span className="stat-icon">
                   <Icon size={18} />

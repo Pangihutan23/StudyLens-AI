@@ -18,6 +18,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useResource } from "../../hooks/useResource";
+import PageTransition from "../common/PageTransition";
 
 export function Logo() {
   return (
@@ -152,7 +153,9 @@ export default function Layout() {
           </div>
         </header>
         <main id="main" className="app-content">
-          <Outlet />
+          <PageTransition key={pathname}>
+            <Outlet />
+          </PageTransition>
         </main>
         <footer className="app-footer">
           <span>Less overwhelm. More understanding.</span>
