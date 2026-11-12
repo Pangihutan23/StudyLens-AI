@@ -1,54 +1,49 @@
 import { test, expect } from "@playwright/test";
-import path from "node:path";
+import { themeFixtures } from "./helpers/themeFixtures";
 
-test("scroll reveals content once and preserves it when leaving the viewport", async ({
-  page,
-}, info) => {
-  await page.goto("/");
-  const closing = page.locator(".closing-cta");
-  await expect(closing).toHaveAttribute("data-reveal", "pending");
-  await closing.scrollIntoViewIfNeeded();
-  await expect(closing).toHaveAttribute("data-reveal", "visible");
-  await expect(closing).toHaveCSS("opacity", "1");
-  await expect(closing).toHaveCSS("transform", "none");
-  await page.getByRole("heading", { level: 1 }).scrollIntoViewIfNeeded();
-  await expect(closing).toHaveAttribute("data-reveal", "visible");
-  await expect(page.locator(".hero-content")).toHaveCSS("opacity", "1");
-  if (info.project.name === "desktop") {
-    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-    await page.screenshot({
-      path: path.resolve("..", "qa", "motion-preview.png"),
-    });
-  }
-});
-
-test("reduced motion keeps offscreen content visible and removes decorative motion", async ({
+test("document cards reveal and remain available after switching tools", async ({
   page,
 }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  const closing = page.locator(".closing-cta");
-  await expect(closing).toHaveAttribute("data-reveal", "visible");
-  await expect(closing).toHaveCSS("opacity", "1");
-  await expect(closing).toHaveCSS("transform", "none");
-  await expect(page.locator(".feature-card").first()).toHaveCSS(
-    "translate",
-    "none",
-  );
-  await expect(page.locator(".hero-content")).toHaveCSS("opacity", "1");
+  await themeFixtures(page);
+  await page.goto("/?tool=documents");
+  const card = page.locator(".document-card").first();
+  await card.scrollIntoViewIfNeeded();
+  await expect(card).toHaveAttribute("data-reveal", "visible");
+  await expect(card).toHaveCSS("opacity", "1");
+  await page.getByRole("tab", { name: "Chat", exact: true }).click();
+  await page
+    .getByRole("navigation", { name: "Workspace tools" })
+    .getByRole("button", { name: "My Documents", exact: true })
+    .click();
+  await expect(card).toHaveAttribute("data-reveal", "visible");
 });
 
-test("content remains readable when Intersection Observer is unavailable", async ({
+test("reduced motion keeps workspace content readable", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await themeFixtures(page);
+  await page.goto("/?tool=documents");
+  const card = page.locator(".document-card").first();
+  await expect(card).toHaveAttribute("data-reveal", "visible");
+  await expect(card).toHaveCSS("opacity", "1");
+  await expect(card).toHaveCSS("transform", "none");
+});
+
+test("content remains usable without Intersection Observer", async ({
   page,
 }) => {
   await page.addInitScript(() => {
     window.IntersectionObserver = undefined;
   });
-  await page.goto("/");
-  const closing = page.locator(".closing-cta");
-  await expect(closing).toHaveAttribute("data-reveal", "visible");
-  await expect(closing).toHaveCSS("opacity", "1");
+  await themeFixtures(page);
+  await page.goto("/?tool=documents");
+  await expect(page.locator(".document-card").first()).toHaveAttribute(
+    "data-reveal",
+    "visible",
+  );
   await expect(
-    page.getByRole("link", { name: "Start Learning", exact: true }),
+    page.getByRole("button", {
+      name: "Delete Learning foundations.pdf",
+      exact: true,
+    }),
   ).toBeVisible();
 });

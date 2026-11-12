@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { WorkspaceLink as Link } from "../common/WorkspaceLink";
+import { useEffect } from "react";
 import { FileText } from "lucide-react";
 import { Select } from "../common/UI";
 
@@ -9,6 +10,9 @@ export default function DocumentSelect({
   disabled,
 }) {
   const ready = documents.filter((d) => d.status === "ready");
+  useEffect(() => {
+    if (value && !ready.some((document) => document.id === value)) onChange("");
+  }, [documents, value, onChange]);
   return (
     <>
       <Select
@@ -28,7 +32,7 @@ export default function DocumentSelect({
         <p className="helper">
           <FileText size={14} />
           No indexed PDFs yet.{" "}
-          <Link to="/app/documents">Upload a document</Link>
+          <Link to="/?tool=documents">Upload a document</Link>
         </p>
       )}
     </>

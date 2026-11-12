@@ -8,10 +8,10 @@ test("every page and generated view uses the exact shared neon palette", async (
   await page.emulateMedia({ reducedMotion: "reduce" });
   await themeFixtures(page);
   const views = [
-    ["landing", "/", "Study smarter"],
+    ["workspace", "/", "Your study material"],
     ["dashboard", "/app", "Welcome to your study space."],
     ["documents", "/app/documents", "My documents"],
-    ["chat", `/app/chat?session=${ids.session}`, "AI chat assistant"],
+    ["chat", `/app/chat?session=${ids.session}`, "Your study material"],
     ["summaries", `/app/summaries?id=${ids.summary}`, "Intelligent summaries"],
     ["quiz", `/app/quizzes?id=${ids.quiz}`, "Practice with purpose"],
     [
@@ -24,8 +24,17 @@ test("every page and generated view uses the exact shared neon palette", async (
   ];
   for (const [name, url, title] of views) {
     await page.goto(url);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText(title);
-    await expect(page.locator(".loading,.skeleton")).toHaveCount(0);
+    await expect(
+      page
+        .locator(".workspace-tool:not([hidden])")
+        .getByRole("heading")
+        .first(),
+    ).toContainText(title);
+    await expect(
+      page.locator(
+        ".workspace-tool:not([hidden]) .loading,.workspace-tool:not([hidden]) .skeleton",
+      ),
+    ).toHaveCount(0);
     const audit = await page.evaluate(() => {
       const white = "rgb(245, 250, 255)",
         blue = "rgb(88, 166, 255)";
@@ -73,7 +82,7 @@ test("every page and generated view uses the exact shared neon palette", async (
       path: path.resolve(
         "..",
         "qa",
-        "neon",
+        "studio",
         `${name}-${info.project.name}.png`,
       ),
       fullPage: true,

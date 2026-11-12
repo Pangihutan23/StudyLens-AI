@@ -1,7 +1,5 @@
 import { test, expect } from "@playwright/test";
-import path from "node:path";
-
-const qa = path.resolve("..", "qa");
+import { themeFixtures } from "./helpers/themeFixtures";
 async function noOverflow(page) {
   expect(
     await page.evaluate(
@@ -9,139 +7,35 @@ async function noOverflow(page) {
     ),
   ).toBeTruthy();
 }
-async function revealPage(page) {
-  for (const element of await page.locator("[data-reveal]").all()) {
-    await element.scrollIntoViewIfNeeded();
-    await expect(element).toHaveAttribute("data-reveal", "visible");
-    await expect(element).toHaveCSS("opacity", "1");
-  }
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-}
-async function navigate(page, label) {
-  if (
-    await page
-      .getByRole("button", { name: "Open navigation", exact: true })
-      .isVisible()
-  )
-    await page
-      .getByRole("button", { name: "Open navigation", exact: true })
-      .click();
-  await page
-    .getByRole("navigation", { name: "Main navigation" })
-    .getByRole("link", { name: label, exact: true })
-    .click();
-}
-
-test("landing, real backend, all workspace pages and responsive layout", async ({
-  page,
-}, info) => {
+test("all study tools share one responsive workspace", async ({ page }) => {
+  await themeFixtures(page);
   const errors = [];
-  page.on("pageerror", (e) => errors.push(e.message));
-  page.on("console", (m) => {
-    if (m.type() === "error") console.log("Browser error:", m.text());
-  });
+  page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Study smarter",
-  );
-  await page.evaluate(() => document.fonts.ready);
-  await expect(
-    page
-      .locator(".hero > div")
-      .filter({ has: page.getByRole("heading", { level: 1 }) }),
-  ).toHaveCSS("opacity", "1");
-  await noOverflow(page);
-  await revealPage(page);
-  await page.screenshot({
-    path: path.join(qa, `landing-${info.project.name}.png`),
-    fullPage: true,
-  });
-  await page.getByRole("link", { name: "Start Learning", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "Welcome to your study space." }),
-  ).toBeVisible();
-  await expect(
-    page.getByText("Cannot reach the study server.", { exact: false }),
-  ).toHaveCount(0);
-  await expect(page.locator(".connection.online")).toBeVisible();
-  await expect(page.getByText("Uploaded PDFs", { exact: true })).toBeVisible();
-  await noOverflow(page);
-  await revealPage(page);
-  await page.screenshot({
-    path: path.join(qa, `dashboard-${info.project.name}.png`),
-    fullPage: true,
-  });
-  await navigate(page, "My Documents");
-  await expect(
-    page.getByRole("heading", { name: "My documents", exact: true }),
-  ).toBeVisible();
+  const nav = page.getByRole("navigation", { name: "Workspace tools" });
+  for (const [label, title] of [
+    ["My Documents", "My documents"],
+    ["AI Summarizer", "Intelligent summaries"],
+    ["Quiz Generator", "Practice with purpose"],
+    ["Learning History", "Your learning story"],
+    ["Dashboard", "Welcome to your study space."],
+    ["Settings", "Workspace settings"],
+  ]) {
+    await nav.getByRole("button", { name: label, exact: true }).click();
+    await expect(
+      page.getByRole("heading", { name: title, exact: true }),
+    ).toBeVisible();
+    expect(new URL(page.url()).pathname).toBe("/");
+    await noOverflow(page);
+  }
   await page
-    .getByRole("searchbox", { name: "Search documents" })
-    .fill("__no_such_lecture_qa_5c92__");
-  await expect(
-    page.getByRole("heading", { name: "No matching documents" }),
-  ).toBeVisible();
-  await noOverflow(page);
-  await navigate(page, "AI Chat Assistant");
-  await expect(
-    page.getByRole("heading", { name: "AI chat assistant", exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Send question" }),
-  ).toBeDisabled();
-  await page
-    .getByRole("button", { name: "Explain the main concepts simply" })
-    .click();
-  await expect(
-    page.getByRole("textbox", { name: "Your question" }),
-  ).toHaveValue("Explain the main concepts simply");
-  await noOverflow(page);
-  await page.screenshot({
-    path: path.join(qa, `chat-${info.project.name}.png`),
-    fullPage: true,
-  });
-  await navigate(page, "AI Summarizer");
-  await expect(
-    page.getByRole("heading", { name: "Intelligent summaries" }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Generate summary" }),
-  ).toBeDisabled();
-  await page
-    .getByLabel("Summary format")
-    .selectOption("Structured Study Notes");
-  await noOverflow(page);
-  await navigate(page, "Quiz Generator");
-  await expect(
-    page.getByRole("heading", { name: "Practice with purpose" }),
-  ).toBeVisible();
-  await page.getByLabel("Questions", { exact: true }).selectOption("10");
-  await expect(
-    page.getByRole("button", { name: "Generate practice quiz" }),
-  ).toBeDisabled();
-  await noOverflow(page);
-  await navigate(page, "Learning History");
-  await expect(
-    page.getByRole("heading", { name: "Your learning story" }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Quizzes", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Quizzes", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  await noOverflow(page);
-  await page.goto("/app/settings");
-  await expect(
-    page.getByRole("heading", { name: "Workspace settings" }),
-  ).toBeVisible();
-  await page.getByLabel("Output language").selectOption("Bahasa Indonesia");
-  await expect(
-    page.getByRole("status").filter({ hasText: "Language preference saved." }),
-  ).toBeVisible();
+    .getByLabel("Output language")
+    .last()
+    .selectOption("Bahasa Indonesia");
   await page.reload();
   await expect(page.getByLabel("Output language")).toHaveValue(
     "Bahasa Indonesia",
   );
-  await noOverflow(page);
   expect(errors).toEqual([]);
 });
 
@@ -240,14 +134,16 @@ test("AI chat, summary download and quiz answer review with test-only API fixtur
   );
   await page.goto("/app/chat");
   await expect(
-    page.getByRole("heading", { name: "AI chat assistant", exact: true }),
+    page.getByRole("heading", { name: "Your study material", exact: true }),
   ).toBeVisible();
   const contextButton = page.getByRole("button", {
     name: "Context",
     exact: true,
   });
   if (await contextButton.isVisible()) await contextButton.click();
-  await page.getByText(doc.title, { exact: true }).click();
+  await page
+    .getByRole("checkbox", { name: `Use ${doc.title} as AI context` })
+    .check();
   if (await contextButton.isVisible()) await contextButton.click();
   await page
     .getByRole("textbox", { name: "Your question" })

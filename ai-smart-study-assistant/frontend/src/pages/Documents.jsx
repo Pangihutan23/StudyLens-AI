@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { WorkspaceLink as Link } from "../components/common/WorkspaceLink";
 import {
   Check,
   FileText,
@@ -109,7 +109,7 @@ export default function Documents() {
             Connect Gemini before uploading: add your API key to{" "}
             <code>backend/.env</code>, then restart the backend.
           </span>
-          <Link to="/app/settings">
+          <Link to="/?tool=settings">
             Setup details
             <ArrowRight size={14} />
           </Link>
@@ -195,7 +195,7 @@ export default function Documents() {
         </div>
         <div className="toolbar-actions">
           {readySelected.length > 0 && (
-            <Link to="/app/chat" className="btn btn-secondary">
+            <Link to="/?tool=chat" className="btn btn-secondary">
               <MessageSquare size={15} />
               Chat with selected
             </Link>

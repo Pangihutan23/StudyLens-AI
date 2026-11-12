@@ -5,7 +5,14 @@ export const api = axios.create({
   timeout: 600000,
 });
 api.interceptors.response.use(
-  (response) => response.data.data,
+  (response) => {
+    if (["post", "delete"].includes(response.config.method)) {
+      window.dispatchEvent(
+        new CustomEvent("study:data-changed", { detail: response.config.url }),
+      );
+    }
+    return response.data.data;
+  },
   (error) => {
     const message =
       error.response?.data?.error?.message ||

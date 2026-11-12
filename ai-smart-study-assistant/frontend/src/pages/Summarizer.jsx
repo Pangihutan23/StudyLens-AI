@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useToolParams } from "../hooks/useToolParams";
 import {
   AlignLeft,
   ArrowRight,
@@ -30,7 +30,7 @@ export default function Summarizer() {
   const docs = useResource("/documents"),
     history = useResource("/summaries");
   const { toast, language, setLanguage } = useApp();
-  const [params, setParams] = useSearchParams();
+  const [params, setParams] = useToolParams("summaries");
   const [documentId, setDocumentId] = useState(""),
     [type, setType] = useState("Key Points"),
     [length, setLength] = useState("Balanced"),

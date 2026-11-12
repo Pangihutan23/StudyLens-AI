@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { WorkspaceLink as Link } from "../components/common/WorkspaceLink";
 import {
   AlignLeft,
   ArrowUpRight,
@@ -29,14 +29,14 @@ const icons = {
 };
 const target = (a) =>
   a.type === "document"
-    ? "/app/documents"
+    ? "/?tool=documents"
     : a.type === "chat"
-      ? `/app/chat?session=${a.id}`
+      ? `/?tool=chat&session=${a.id}`
       : a.type === "summary"
-        ? `/app/summaries?id=${a.id}`
+        ? `/?tool=summaries&summary=${a.id}`
         : a.type === "quiz"
-          ? `/app/quizzes?id=${a.id}`
-          : `/app/quizzes?attempt=${a.id}`;
+          ? `/?tool=quizzes&quiz=${a.id}`
+          : `/?tool=quizzes&attempt=${a.id}`;
 export default function LearningHistory() {
   const activity = useResource("/dashboard/activity"),
     results = useResource("/quizzes/results");
@@ -153,7 +153,7 @@ export default function LearningHistory() {
                   <td>
                     <Link
                       className="text-link"
-                      to={`/app/quizzes?attempt=${r.id}`}
+                      to={`/?tool=quizzes&attempt=${r.id}`}
                     >
                       Review
                       <ArrowUpRight size={14} />

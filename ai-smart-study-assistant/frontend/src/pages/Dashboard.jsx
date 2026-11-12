@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { WorkspaceLink as Link } from "../components/common/WorkspaceLink";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -51,7 +51,7 @@ export default function Dashboard() {
         title="Welcome to your study space."
         description="Make sense of your notes. Make the most of your potential."
         action={
-          <Link to="/app/documents" className="btn btn-primary">
+          <Link to="/?tool=documents" className="btn btn-primary">
             <Plus size={17} />
             Upload PDF
           </Link>
@@ -69,7 +69,7 @@ export default function Dashboard() {
             change everything.
           </h2>
           <p>Bring your lecture notes. Let curiosity lead the way.</p>
-          <Link className="text-link" to="/app/chat">
+          <Link className="text-link" to="/?tool=chat">
             Ask your study assistant
             <ArrowRight size={15} />
           </Link>
@@ -102,7 +102,7 @@ export default function Dashboard() {
       )}
       <div className="dashboard-columns">
         <div>
-          <SectionTitle title="Recent documents" to="/app/documents" />
+          <SectionTitle title="Recent documents" to="/?tool=documents" />
           <Card className="list-card">
             {docs.error ? (
               <ErrorState message={docs.error} retry={docs.refresh} />
@@ -114,7 +114,7 @@ export default function Dashboard() {
                 title="Your knowledge starts here"
                 description="Upload your first lecture PDF to unlock conversations, summaries, and quizzes."
                 action={
-                  <Link className="text-link" to="/app/documents">
+                  <Link className="text-link" to="/?tool=documents">
                     Add your first document
                     <ArrowRight size={14} />
                   </Link>
@@ -122,7 +122,7 @@ export default function Dashboard() {
               />
             ) : (
               docs.data.slice(0, 4).map((d) => (
-                <Link className="document-row" key={d.id} to="/app/documents">
+                <Link className="document-row" key={d.id} to="/?tool=documents">
                   <span className="pdf-icon">
                     <FileText size={21} />
                   </span>
@@ -261,7 +261,7 @@ export default function Dashboard() {
                 "quizzes",
               ],
             ].map(([Icon, title, text, to]) => (
-              <Link className="card quick-action" to={`/app/${to}`} key={to}>
+              <Link className="card quick-action" to={`/?tool=${to}`} key={to}>
                 <span className="feature-icon">
                   <Icon size={19} />
                 </span>
@@ -273,7 +273,7 @@ export default function Dashboard() {
               </Link>
             ))}
           </div>
-          <SectionTitle title="Recent activity" to="/app/history" />
+          <SectionTitle title="Recent activity" to="/?tool=history" />
           <Card className="activity-card">
             {activity.error ? (
               <ErrorState message={activity.error} retry={activity.refresh} />

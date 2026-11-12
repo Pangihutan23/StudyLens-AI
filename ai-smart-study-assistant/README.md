@@ -1,6 +1,6 @@
 # AI Smart Study Assistant
 
-A personal learning workspace built with React/Vite and FastAPI. Upload lecture PDFs, ask grounded questions with page references, create study notes, and practice with Gemini-generated quizzes. The interface uses charcoal surfaces, consistent neon-white text (`#F5FAFF`) and electric-blue accents (`#58A6FF`), locally served Inter/Playfair Display/JetBrains Mono fonts, and responsive layouts.
+A personal learning workspace built with React/Vite and FastAPI. Upload lecture PDFs, ask grounded questions with page references, create study notes, and practice with Gemini-generated quizzes. Everything opens directly in one workspace, with no separate landing page or Launch App button. The interface retains charcoal surfaces, consistent neon-white text (`#F5FAFF`) and electric-blue accents (`#58A6FF`), locally served Inter/Playfair Display/JetBrains Mono fonts, and responsive layouts.
 
 This is a **single-user local application**, without authentication. Keep both servers bound to localhost. The application contains no sample documents, fabricated analytics, or fallback AI answers.
 
@@ -100,34 +100,36 @@ Open **http://localhost:5173**. API documentation is at **http://localhost:8000/
 
 ## Using the workspace
 
-1. Launch the app and open **My Documents**. Drop one or more PDFs into the upload area. Files upload in sequence; progress switches to processing while Gemini embeds the text.
-2. Wait for **Ready to study**. Select PDFs as AI context, then open **AI Chat Assistant**. Choose up to 10 documents, set a language, and ask your question. Responses support Markdown, code blocks, copy/download, and retrieved document/page references. Saved conversations can be reopened or deleted.
-3. Open **AI Summarizer**, select a document, choose one of five formats, detail level, and language. Copy/download Markdown or reopen saved summaries.
-4. Open **Quiz Generator**. Choose 5/10/15/20 questions, difficulty, language, and optionally a topic. Navigate questions and select one answer each. Submit to see a Python-calculated score, answer review, explanations, and source pages. Skipped questions count as incorrect. Reopening a quiz starts a fresh attempt; saved attempts remain in **Learning History**.
-5. Dashboard statistics and charts reflect actual persisted records. The activity feed shows the 40 latest learning events; quiz attempt history is available separately in full.
+1. Open the website to enter the **Chat** workspace directly. Upload PDFs from **Bring your notes along**, or use the document icon in the left rail for the full document library and drag-and-drop upload. Files are processed in sequence while Gemini embeds their text.
+2. Wait for **Ready to study**. Select up to 10 PDFs in the left panel, set a language, and ask a question. The right panel shows Markdown answers with copy/download and retrieved document/page references. Expand **Recent conversations** to reopen or delete chats.
+3. Select the **Summarize** tab, a document, one of five formats, detail level, and language. Copy/download Markdown or reopen saved summaries.
+4. Select **Practice**. Choose 5/10/15/20 questions, difficulty, language, and optionally a topic. Navigate questions and select one answer each. Submit to see a Python-calculated score, answer review, explanations, and source pages. Skipped questions count as incorrect. Reopening a quiz starts a fresh attempt; saved attempts remain in **Learning History**.
+5. The icon rail also opens **Learning History**, **Dashboard**, and **Settings** within the same workspace. Dashboard statistics and charts reflect actual persisted records. The activity feed shows the 40 latest learning events; quiz attempt history is available separately in full.
+
+Tools switch in place using `/?tool=chat`, `/?tool=summaries`, and similar URLs. Visited tools stay mounted so drafts, quiz answers and in-flight requests survive tab changes. Separate result parameters (`session`, `summary`, `quiz`, `attempt`) prevent cross-tool conflicts and support browser Back/Forward and reload. Existing `/app/...` bookmarks redirect to their corresponding tool and saved result. Uploading or deleting documents refreshes document selectors across mounted tools.
 
 ## Global design system
 
 All pages share the canonical CSS variables in `frontend/src/index.css`: `--color-white`, `--color-neon-blue`, the four background tokens, `--border-neutral`, and shared white/blue glow tokens. Tailwind colors reference the same tokens. Components, Markdown, form states, chart labels, tooltips, source badges, quiz review and notifications all use this palette; surface transparency uses `color-mix` without dimming white text.
 
-The landing header has a rounded capsule, a thin neon-white outline and backdrop blur. Navigation uses white text with blue active/hover states. Launch App stays transparent with bold white text. Primary workspace actions use dark surfaces and electric-blue borders/glow to preserve white-text contrast. Status meaning is conveyed through labels, icons and border styles.
+The workspace uses one rounded frame, a compact icon rail, and keyboard-accessible Chat/Summarize/Practice tabs. Blue ambient light and a subtle blue panel outline preserve the original black, white and blue identity. Chat places source documents and the question composer on the left, and the assistant response on the right; the panels stack without overlap on phones. Primary actions use dark blue surfaces and soft borders. Status meaning is conveyed through labels, icons and border styles.
 
-Run `npm run audit:theme` from `frontend` to check the canonical palette, token references and component overrides. The production build runs this audit automatically. `tests/theme.spec.js` checks every page and generated content view on desktop/mobile using browser-only fixtures, and captures screenshots in `qa/neon/`. These fixtures do not change the real database or production AI responses.
+Run `npm run audit:theme` from `frontend` to check the canonical palette, token references and component overrides. The production build runs this audit automatically. `tests/theme.spec.js` checks each tool and generated content view on desktop/mobile using browser-only fixtures, and captures screenshots in `qa/studio/`. These fixtures do not change the real database or production AI responses.
 
 ## Interface motion
 
-Framer Motion handles soft fade/slide entrances and page changes. The reusable `Reveal` component uses the native Intersection Observer API to show landing sections and workspace cards as they enter the viewport. Feature cards and study steps use short staggered delays. Each element reveals once and remains visible when you scroll back; keyboard focus also reveals its content.
+Framer Motion handles soft card and message entrances. The reusable `Reveal` component uses the native Intersection Observer API to show workspace cards as they enter the viewport. Each element reveals once and remains visible when you scroll back; keyboard focus also reveals its content. Switching tools preserves mounted content.
 
 CSS transitions provide card elevation, button feedback, moving link arrows, and smooth focus borders. Workspace cards and clickable feature cards use an opacity-only entrance so buttons stay in place during taps. Hover elevation is limited to devices with a precise pointer. The implementation honors `prefers-reduced-motion` and keeps content readable when Intersection Observer is unavailable. No additional animation dependency or backend configuration is needed.
 
-Shared implementation: `frontend/src/components/common/Reveal.jsx`, `frontend/src/components/common/PageTransition.jsx`, `frontend/src/hooks/useIntersectionReveal.js`, and `frontend/src/index.css`. Adjust the entrance duration/distance in `Reveal.jsx`; CSS interaction transitions are near the end of `index.css`.
+Shared implementation: `frontend/src/components/common/Reveal.jsx`, `frontend/src/hooks/useIntersectionReveal.js`, and `frontend/src/index.css`. Adjust the entrance duration/distance in `Reveal.jsx`; studio styles are near the end of `index.css`.
 
 ## Architecture and data
 
 ```text
 frontend/src/
   components/common/     Shared UI, Markdown, modal, notifications
-  components/layout/     Sidebar, navbar and application shell
+  components/layout/     Single-page studio, icon rail and tool tabs
   components/documents/  Document selection
   components/quiz/       Quiz player and scored review
   context/               Preferences and toast state
@@ -187,7 +189,7 @@ npm run build
 
 The built frontend is in `frontend/dist`. `npm run preview` serves that build locally, but does not start FastAPI. Add the preview origin to `CORS_ORIGINS` if using it for AI features.
 
-Browser checks (keep the normal frontend and backend servers running in the other terminals):
+Browser checks (keep the frontend server running in another terminal; backend is not required for these fixture-based tests):
 
 ```powershell
 cd 'D:\Folder Projek\Asisten Belajar\ai-smart-study-assistant\frontend'
@@ -195,7 +197,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-Playwright checks every workspace route on desktop and a phone viewport, form states, navigation, language persistence, and horizontal overflow. AI interaction tests use **test-only intercepted API responses** to exercise context selection, citations, summary downloads, quiz navigation, and answer review. They do not replace the real application's backend or call Gemini. Screenshots are saved to `qa/`. The route checks read your real local backend and do not modify your documents/history. `STUDY_TEST_URL` can point the browser tests to another local frontend URL. `npm run format` formats frontend sources.
+Playwright checks every workspace tool on desktop and a phone viewport, form states, navigation, language persistence, panel overlap and horizontal overflow. Tests use **test-only intercepted API responses** to exercise inline uploads, synchronized document deletion, context selection, citations, summary downloads, quiz navigation and answer review. They also verify keyboard tabs, legacy bookmarks, separate saved result IDs and background request completion. Tests do not call Gemini or modify the real backend, documents or history. Screenshots are saved to `qa/`. `STUDY_TEST_URL` can point the browser tests to another local frontend URL. `npm run format` formats frontend sources.
 
 Automated tests cover PDF validation/extraction, embedding failure cleanup, real FAISS retrieval and index recovery, document selection, grounded prompt construction, summary section coverage, quiz schema rejection, hidden answer keys, scoring, cascading deletion, persistence across app startup, SDK client configuration, retry budgets, quota failures, timeouts, and empty-database statistics. Live Gemini generation and embedding require a real key and must be checked separately.
 

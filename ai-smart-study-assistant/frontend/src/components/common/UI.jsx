@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useId, useRef } from "react";
-import { Link } from "react-router-dom";
+import { WorkspaceLink as Link } from "./WorkspaceLink";
 import {
   AlertCircle,
   ArrowRight,
@@ -125,7 +125,7 @@ export function PageHeading({ eyebrow, title, description, action }) {
     <div className="page-heading">
       <div>
         <div className="eyebrow">{eyebrow || "YOUR LEARNING WORKSPACE"}</div>
-        <h1>{title}</h1>
+        <h2>{title}</h2>
         {description && <p>{description}</p>}
       </div>
       {action}

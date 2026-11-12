@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useToolParams } from "../hooks/useToolParams";
 import { ArrowRight, Clock3, ListChecks, Sparkles } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { useResource } from "../hooks/useResource";
@@ -24,7 +24,7 @@ export default function QuizGenerator() {
   const docs = useResource("/documents"),
     history = useResource("/quizzes");
   const { toast, language, setLanguage } = useApp();
-  const [params, setParams] = useSearchParams();
+  const [params, setParams] = useToolParams("quizzes");
   const [documentId, setDocumentId] = useState(""),
     [count, setCount] = useState(5),
     [difficulty, setDifficulty] = useState("Medium"),
