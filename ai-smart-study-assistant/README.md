@@ -37,7 +37,7 @@ Edit **`backend/.env`** in VS Code:
 
 ```dotenv
 GEMINI_API_KEY=your_real_key
-GEMINI_MODEL=gemini-3.8-flash
+GEMINI_MODEL=gemini-3.5-flash-lite
 GEMINI_EMBEDDING_MODEL=gemini-embedding-001
 GEMINI_EMBEDDING_DIMENSIONS=768
 DATABASE_URL=sqlite:///./study_assistant.db
@@ -46,7 +46,21 @@ MAX_UPLOAD_MB=25
 AI_TIMEOUT_SECONDS=60
 ```
 
-Create a key in [Google AI Studio](https://aistudio.google.com/apikey). Choose a generation model available to your account using the [official model catalog](https://ai.google.dev/gemini-api/docs/models). The default is [Gemini 3.8 Flash](https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash), listed as stable with structured output support when checked on **10 November 2026**. The default model is configurable; a model appearing in documentation does not guarantee access or quota for your key. Gemini 3 models use low thinking effort to keep local study operations responsive; generation temperature stays at the provider default. The implementation follows the official [Google Gen AI SDK](https://googleapis.github.io/python-genai/), [structured outputs](https://ai.google.dev/gemini-api/docs/structured-output), and [embedding documentation](https://ai.google.dev/gemini-api/docs/embeddings). Embeddings use retrieval-specific task types and explicit L2 normalization at 768 dimensions.
+Create a key in [Google AI Studio](https://aistudio.google.com/apikey). Choose a generation model available to your account using the [official model catalog](https://ai.google.dev/gemini-api/docs/models). The default is `gemini-3.5-flash-lite`: live checks on **12 November 2026** verified document-grounded chat and structured JSON with this workspace's key. The previously configured `gemini-3.8-flash` returned a provider response deadline error in a small generation check. Availability and latency vary by account and time. A model appearing in the catalog or the API model list does not guarantee successful generation: `gemini-2.5-flash` was listed but rejected generation for this key. Gemini 3 models use low thinking effort; generation temperature stays at the provider default. The implementation follows the official [Google Gen AI SDK](https://googleapis.github.io/python-genai/), [structured outputs](https://ai.google.dev/gemini-api/docs/structured-output), and [embedding documentation](https://ai.google.dev/gemini-api/docs/embeddings). Embeddings use retrieval-specific task types and explicit L2 normalization at 768 dimensions.
+
+From the backend folder, list models without exposing your key:
+
+```powershell
+.\.venv\Scripts\python.exe scripts/check_gemini.py
+```
+
+Optionally verify generation access with small requests (consumes API quota):
+
+```powershell
+.\.venv\Scripts\python.exe scripts/check_gemini.py --probe gemini-3.5-flash-lite --probe gemini-3.1-flash-lite
+```
+
+After editing `.env`, restart the backend. Changing only `GEMINI_MODEL` does not require uploading existing documents again. Keep the embedding model and dimensions unchanged for existing indexes.
 
 The dashboard and navigation work without an API key. PDF indexing and all AI features return a helpful setup error until a key is configured. There is no runtime mock mode. Settings reports whether a key is present, not whether live credentials have been verified.
 
@@ -191,6 +205,7 @@ Automated tests cover PDF validation/extraction, embedding failure cleanup, real
 - **Wrong Python / FAISS installation errors:** use 64-bit Python 3.12 via `py -3.12`. Do not use MSYS Python. Recreate `.venv` with the intended interpreter.
 - **PowerShell blocks npm scripts:** use `npm.cmd ci` and `npm.cmd run dev` instead of changing system execution policy.
 - **API key needed / model rejected:** set the key and available generation model in backend `.env`; restart the backend. Check Google AI Studio permissions and quota. Provider errors are sanitized so credentials are never exposed.
+- **Gemini response deadline (504):** the provider did not finish before the configured deadline. Retry or choose a model verified by `scripts/check_gemini.py --probe MODEL`, then restart the backend. Increasing `AI_TIMEOUT_SECONDS` can allow longer requests but does not fix provider capacity problems.
 - **429 quota errors:** wait for quota recovery or update your Google project limits. Transient failures retry at most three times with exponential backoff; repeated quota exhaustion remains an error.
 - **Long requests:** each provider request has a configurable timeout. The browser waits up to 10 minutes per operation. Long PDFs require several AI calls and may cost more or outlast this browser timeout. Check saved history before retrying. Processing runs in the local API worker; there is no durable background-job queue or cancellation/resume UI in this version.
 - **No readable text:** OCR is not included. Scanned, image-only, encrypted or corrupt PDFs are rejected with guidance. Documents with many unreadable pages are rejected rather than silently losing large sections. Diagrams/images and math rendered solely as images are not understood by the text pipeline. Small numbers of blank/title/image-only pages can be skipped.

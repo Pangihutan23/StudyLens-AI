@@ -9,7 +9,7 @@ load_dotenv(BASE_DIR / '.env')
 
 class Settings:
     api_key = os.getenv('GEMINI_API_KEY', '').strip()
-    model = os.getenv('GEMINI_MODEL', 'gemini-3.8-flash').strip()
+    model = os.getenv('GEMINI_MODEL', 'gemini-3.5-flash-lite').strip()
     embedding_model = os.getenv('GEMINI_EMBEDDING_MODEL', 'gemini-embedding-001').strip()
     dimensions = int(os.getenv('GEMINI_EMBEDDING_DIMENSIONS', '768'))
     database_url = os.getenv('DATABASE_URL', f'sqlite:///{BASE_DIR / "study_assistant.db"}')

@@ -16,7 +16,7 @@ def test_sdk_client_configuration(monkeypatch):
         assert client is not None
 
 
-@pytest.mark.parametrize('code,status', [(429,429),(503,503),(403,502),(404,502)])
+@pytest.mark.parametrize('code,status', [(429,429),(503,503),(504,504),(403,502),(404,502)])
 def test_api_errors_and_retry_budget(monkeypatch, code, status):
     service = GeminiService()
     context = MagicMock()
@@ -30,7 +30,11 @@ def test_api_errors_and_retry_budget(monkeypatch, code, status):
         service._call(action)
     assert exc.value.status == status
     assert 'provider detail' not in exc.value.message
-    assert len(calls) == (3 if code in (429,503) else 1)
+    assert len(calls) == (3 if code in (429,503,504) else 1)
+    if code == 504:
+        assert 'deadline' in exc.value.message and 'GEMINI_MODEL' in exc.value.message
+    if code == 404:
+        assert 'unavailable for your API key' in exc.value.message
 
 
 def test_network_timeout_retry(monkeypatch):

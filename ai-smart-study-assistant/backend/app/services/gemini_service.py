@@ -34,7 +34,11 @@ class GeminiService:
                     continue
                 if code == 429:
                     raise AppError('Gemini quota or rate limit reached. Check your Google AI Studio quota and try again later.', 429) from None
-                if code in (400, 401, 403, 404):
+                if code == 504:
+                    raise AppError('Gemini exceeded the response deadline. Retry or choose a faster GEMINI_MODEL in backend/.env, then restart the backend.', 504) from None
+                if code == 404:
+                    raise AppError('This Gemini model is unavailable for your API key. Check GEMINI_MODEL and GEMINI_EMBEDDING_MODEL in backend/.env. Run python scripts/check_gemini.py to list models and test access.', 502) from None
+                if code in (400, 401, 403):
                     raise AppError('Gemini rejected this request. Check your API key, model availability and model permissions in backend/.env.', 502) from None
                 raise AppError('Gemini is temporarily unavailable. Please try again.', 503) from None
             except httpx.TransportError:
